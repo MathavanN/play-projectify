@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlayProjectify.AppHost\PlayProjectify.AppHost.csproj" />
+    <ProjectReference Include="..\..\src\PlayProjectify.AppHost\PlayProjectify.AppHost.csproj" />
   </ItemGroup>
 
   <ItemGroup>
