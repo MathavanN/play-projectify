@@ -1,7 +1,12 @@
 <Solution>
-  <Project Path="PlayProjectify.ApiService/PlayProjectify.ApiService.csproj" />
-  <Project Path="PlayProjectify.AppHost/PlayProjectify.AppHost.csproj" />
-  <Project Path="PlayProjectify.ServiceDefaults/PlayProjectify.ServiceDefaults.csproj" />
-  <Project Path="PlayProjectify.Tests/PlayProjectify.Tests.csproj" />
-  <Project Path="PlayProjectify.Web/PlayProjectify.Web.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/PlayProjectify.ApiService/PlayProjectify.ApiService.csproj" />
+    <Project Path="src/PlayProjectify.AppHost/PlayProjectify.AppHost.csproj" />
+    <Project Path="src/PlayProjectify.ProductService/PlayProjectify.ProductService.csproj" />
+    <Project Path="src/PlayProjectify.ServiceDefaults/PlayProjectify.ServiceDefaults.csproj" />
+    <Project Path="src/PlayProjectify.Web/PlayProjectify.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/PlayProjectify.Tests/PlayProjectify.Tests.csproj" />
+  </Folder>
 </Solution>
