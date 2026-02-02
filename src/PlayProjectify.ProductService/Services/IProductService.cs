@@ -1,4 +1,4 @@
-﻿using PlayProjectify.ProductService.Models.DTOs;
+﻿using PlayProjectify.ProductService.Models.DTO;
 
 namespace PlayProjectify.ProductService.Services;
 

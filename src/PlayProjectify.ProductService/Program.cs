@@ -1,3 +1,4 @@
+using FluentValidation;
 using PlayProjectify.ProductService.Apis;
 using PlayProjectify.ProductService.Data;
 using PlayProjectify.ProductService.Services;
@@ -9,6 +10,7 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.AddApiVersioning();
 
 builder.Services.AddSingleton<ProductStore>();

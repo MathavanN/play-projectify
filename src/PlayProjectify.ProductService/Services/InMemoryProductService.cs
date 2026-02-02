@@ -1,5 +1,5 @@
 ﻿using PlayProjectify.ProductService.Data;
-using PlayProjectify.ProductService.Models.DTOs;
+using PlayProjectify.ProductService.Models.DTO;
 using PlayProjectify.ProductService.Models.Entites;
 
 namespace PlayProjectify.ProductService.Services;
