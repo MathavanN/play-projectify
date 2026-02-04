@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace PlayProjectify.ServiceDefaults;
@@ -36,8 +37,17 @@ public class ValidationFilter<T> : IEndpointFilter
                     g => g.Key,
                     g => g.Select(e => e.ErrorMessage).ToArray()
                 );
-
-            return Results.ValidationProblem(errors);
+            var detail = string.Join(", ", errors.SelectMany(kvp => kvp.Value.Select(msg => $"{kvp.Key}: {msg}")));
+            var problemDetails = new ValidationProblemDetails()
+            {
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+                Title = "Validation error",
+                Status = StatusCodes.Status400BadRequest,
+                Instance = context.HttpContext.Request.Path,
+                Detail = detail,
+                Errors = errors
+            };
+            return TypedResults.BadRequest(ProjectifyServiceResult.Failure(problemDetails));
         }
 
         return await next(context);
