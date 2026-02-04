@@ -1,0 +1,49 @@
+﻿@page "/product"
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+@inject ProductApiClient ProductApi
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+<p>This component demonstrates showing data loaded from a Product API service.</p>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nr</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in products.Select((product, index) => new { product, index }))
+            {
+                <tr>
+                    <td>@(item.index + 1)</td>
+                    <td>@item.product.ProductName</td>
+                    <td>@item.product.ProductDescription</td>
+                    <td>@item.product.ProductPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ProductDto[]? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductApi.GetProductsAsync();
+    }
+}
