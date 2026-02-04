@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.Builder;
-using Microsoft.AspNetCore.Http.HttpResults;
 using PlayProjectify.ProductService.Models.DTO;
 using PlayProjectify.ProductService.Services;
 using PlayProjectify.ServiceDefaults;

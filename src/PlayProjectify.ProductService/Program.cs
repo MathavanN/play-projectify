@@ -16,7 +16,7 @@ builder.AddApiVersioning();
 builder.Services.AddSingleton<ProductStore>();
 builder.Services.AddScoped<IProductService, InMemoryProductService>();
 
-string[] versions = ["v1", "v2"]; 
+string[] versions = ["v1", "v2"];
 builder.AddDefaultOpenApi(versions);
 
 var app = builder.Build();
