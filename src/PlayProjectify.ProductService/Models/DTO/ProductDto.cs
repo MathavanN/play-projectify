@@ -2,45 +2,42 @@
 
 namespace PlayProjectify.ProductService.Models.DTO;
 
+public interface IProductDto
+{
+    string ProductName { get; }
+    string ProductDescription { get; }
+    decimal ProductPrice { get; }
+}
 public record ProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice);
 
-public sealed record AddProductDto(string ProductName, string ProductDescription, decimal ProductPrice);
+public sealed record AddProductDto(string ProductName, string ProductDescription, decimal ProductPrice) : IProductDto;
 
-public record UpdateProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice);
+public record UpdateProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice) : IProductDto;
 
-public sealed class AddProductDtoValidator : AbstractValidator<AddProductDto>
-{
-    public AddProductDtoValidator()
-    {
-        RuleFor(x => x.ProductName)
-            .NotEmpty().WithMessage("Product Name is required.")
-            .MaximumLength(100).WithMessage("Code maximum length is 100.");
+public sealed class AddProductDtoValidator : ProductBaseValidator<AddProductDto> { }
 
-        RuleFor(x => x.ProductDescription)
-            .NotEmpty().WithMessage("Product Name is required.");
-
-        RuleFor(x => x.ProductPrice)
-            .GreaterThanOrEqualTo(1)
-            .WithMessage("Discount must be a positive value."); ;
-    }
-}
-
-public sealed class UpdateProductDtoValidator : AbstractValidator<UpdateProductDto>
+public sealed class UpdateProductDtoValidator : ProductBaseValidator<UpdateProductDto>
 {
     public UpdateProductDtoValidator()
     {
         RuleFor(x => x.ProductId)
-            .Sh
             .NotEmpty().WithMessage("Product Id is required.");
+    }
+}
+
+public abstract class ProductBaseValidator<T> : AbstractValidator<T> where T : IProductDto
+{
+    protected ProductBaseValidator()
+    {
         RuleFor(x => x.ProductName)
             .NotEmpty().WithMessage("Product Name is required.")
-            .MaximumLength(100).WithMessage("Code maximum length is 100.");
+            .MaximumLength(100).WithMessage("Product Name maximum length is 100.");
 
         RuleFor(x => x.ProductDescription)
-            .NotEmpty().WithMessage("Product Name is required.");
+            .NotEmpty().WithMessage("Product Description is required.");
 
         RuleFor(x => x.ProductPrice)
             .GreaterThanOrEqualTo(1)
-            .WithMessage("Discount must be a positive value."); ;
+            .WithMessage("Product Price must be a positive value.");
     }
 }
