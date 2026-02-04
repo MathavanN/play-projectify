@@ -33,37 +33,39 @@ public static class ProductApi
             .WithName("GetProducts")
             .WithSummary("Get products")
             .WithDescription("Get all products")
-            .WithTags("Product");
+            .WithTags("Product")
+            .Produces<ProjectifyServiceResult<IEnumerable<ProductDto>>>(200);
 
         api.MapGet("/{id:guid}", GetProductV1)
             .WithName("GetProduct")
             .WithSummary("Get a product")
             .WithDescription("Get a product")
-            .WithTags("Product");
+            .WithTags("Product")
+            .Produces<ProjectifyServiceResult<ProductDto>>(200)
+            .Produces<ProjectifyServiceResult>(404);
 
         api.MapPost("/", AddProductV1)
             .WithName("AddProduct")
             .WithSummary("Add product")
             .WithDescription("Add new product")
             .WithTags("Product")
-            .Validate<AddProductDto>();
+            .Validate<AddProductDto>()
+            .Produces<ProjectifyServiceResult<ProductDto>>(201)
+            .Produces<ProjectifyServiceResult>(400);
     }
 
-    private static async Task<Ok<IEnumerable<ProductDto>>> GetProductsV1(IProductService productService)
+    private static IResult GetProductsV1(IProductService productService)
     {
-        return TypedResults.Ok(productService.GetAll());
+        return productService.GetAll().ToApiResult();
     }
 
-    private static async Task<Ok<ProductDto>> GetProductV1(IProductService productService, [Description("The product id")] Guid id)
+    private static IResult GetProductV1(IProductService productService, [Description("The product id")] Guid id)
     {
-        return TypedResults.Ok(productService.Get(id));
+        return productService.Get(id).ToApiResult();
     }
 
-    private static async Task<CreatedAtRoute<ProductDto>> AddProductV1(IProductService productService, AddProductDto product)
+    private static IResult AddProductV1(IProductService productService, AddProductDto product)
     {
-        var d = productService.Add(product);
-        return TypedResults.CreatedAtRoute(d,
-            routeName: "GetProduct",
-            routeValues: new { id = d.ProductId });
+        return productService.Add(product).ToApiResult("GetProduct", data => new { id = data.ProductId });
     }
 }
