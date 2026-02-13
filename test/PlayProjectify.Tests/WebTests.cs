@@ -11,7 +11,7 @@ public class WebTests
     {
         // Arrange
         var cancellationToken = TestContext.Current.CancellationToken;
-
+    
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.PlayProjectify_AppHost>(cancellationToken);
         appHost.Services.AddLogging(logging =>
         {
@@ -25,15 +25,17 @@ public class WebTests
         {
             clientBuilder.AddStandardResilienceHandler();
         });
-
+    
         await using var app = await appHost.BuildAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
         await app.StartAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
-
+    
         // Act
-        var httpClient = app.CreateHttpClient("webfrontend");
+        var scheme = Environment.GetEnvironmentVariable("PROJECTIFY_USE_HTTP_ENDPOINTS") == "1" ? "http" : null;
+    
+        var httpClient = scheme == null ? app.CreateHttpClient("webfrontend") : app.CreateHttpClient("webfrontend", scheme);
         await app.ResourceNotifications.WaitForResourceHealthyAsync("webfrontend", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
         var response = await httpClient.GetAsync("/", cancellationToken);
-
+    
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
