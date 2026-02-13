@@ -8,6 +8,9 @@ var apiService = builder.AddProject<Projects.PlayProjectify_ApiService>("apiserv
 var productService = builder.AddProject<Projects.PlayProjectify_ProductService>("productservice")
     .WithHttpHealthCheck("/health");
 
+var orderService = builder.AddProject<Projects.PlayProjectify_OrderService>("orderservice")
+    .WithHttpHealthCheck("/health");
+
 builder.AddProject<Projects.PlayProjectify_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlayProjectify.ApiService\PlayProjectify.ApiService.csproj" />
+    <ProjectReference Include="..\PlayProjectify.OrderService\PlayProjectify.OrderService.csproj" />
     <ProjectReference Include="..\PlayProjectify.ProductService\PlayProjectify.ProductService.csproj" />
     <ProjectReference Include="..\PlayProjectify.Web\PlayProjectify.Web.csproj" />
   </ItemGroup>
