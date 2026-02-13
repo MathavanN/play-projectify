@@ -31,6 +31,7 @@ public record ProjectifyServiceResult<T> : ProjectifyServiceResult
 
     public static implicit operator ProjectifyServiceResult<T>(ProblemDetails error) => new(error);
     public static ProjectifyServiceResult<T> NotFound(string detail) => CreateProblemDetails(HttpStatusCode.NotFound, detail);
+    public static ProjectifyServiceResult<T> CommonError(string detail) => CreateProblemDetails(HttpStatusCode.InternalServerError, detail);
 
     private static ProblemDetails CreateProblemDetails(HttpStatusCode statusCode, string error) =>
         new()
