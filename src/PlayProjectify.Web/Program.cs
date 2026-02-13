@@ -1,6 +1,7 @@
 using PlayProjectify.Web;
 using PlayProjectify.Web.Components;
 
+var useHttp = Environment.GetEnvironmentVariable("PROJECTIFY_USE_HTTP_ENDPOINTS") == "1";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
@@ -25,6 +26,15 @@ builder.Services.AddHttpClient<ProductApiClient>(client =>
     // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
     client.BaseAddress = new("https+http://productservice");
 });
+
+builder.Services.AddHealthChecks(); // required for Aspire
+
+builder.WebHost.ConfigureKestrel(o =>
+{
+    if (useHttp)
+        o.ListenAnyIP(8080); // HTTP for CI
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -34,7 +44,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (!useHttp)
+    app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
