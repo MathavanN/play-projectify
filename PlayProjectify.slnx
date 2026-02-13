@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/PlayProjectify.ApiService/PlayProjectify.ApiService.csproj" />
     <Project Path="src/PlayProjectify.AppHost/PlayProjectify.AppHost.csproj" />
+    <Project Path="src/PlayProjectify.OrderService/PlayProjectify.OrderService.csproj" />
     <Project Path="src/PlayProjectify.ProductService/PlayProjectify.ProductService.csproj" />
     <Project Path="src/PlayProjectify.ServiceDefaults/PlayProjectify.ServiceDefaults.csproj" />
     <Project Path="src/PlayProjectify.Web/PlayProjectify.Web.csproj" />
