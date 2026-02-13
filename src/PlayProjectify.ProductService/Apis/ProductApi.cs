@@ -33,14 +33,14 @@ public static class ProductApi
             .WithSummary("Get products")
             .WithDescription("Get all products")
             .WithTags("Product")
-            .Produces<ProjectifyServiceResult<IEnumerable<ProductDto>>>(200);
+            .Produces<ProjectifyServiceResult<IEnumerable<GetProductDto>>>(200);
 
         api.MapGet("/{id:guid}", GetProductV1)
             .WithName("GetProduct")
             .WithSummary("Get a product")
             .WithDescription("Get a product")
             .WithTags("Product")
-            .Produces<ProjectifyServiceResult<ProductDto>>(200)
+            .Produces<ProjectifyServiceResult<GetProductDto>>(200)
             .Produces<ProjectifyServiceResult>(404);
 
         api.MapPost("/", AddProductV1)
@@ -53,18 +53,21 @@ public static class ProductApi
             .Produces<ProjectifyServiceResult>(400);
     }
 
-    private static IResult GetProductsV1(IProductService productService)
+    private static async Task<IResult> GetProductsV1(IProductService productService)
     {
-        return productService.GetAll().ToApiResult();
+        var result = await productService.GetAll();
+        return result.ToApiResult();
     }
 
-    private static IResult GetProductV1(IProductService productService, [Description("The product id")] Guid id)
+    private static async Task<IResult> GetProductV1(IProductService productService, Guid id)
     {
-        return productService.Get(id).ToApiResult();
+        var result = await productService.Get(id);
+        return result.ToApiResult();
     }
 
-    private static IResult AddProductV1(IProductService productService, AddProductDto product)
+    private static async Task<IResult> AddProductV1(IProductService productService, AddProductDto product)
     {
-        return productService.Add(product).ToApiResult("GetProduct", data => new { id = data.ProductId });
+        var result = await productService.Add(product);
+        return result.ToApiResult("GetProduct", data => new { id = data.ProductId });
     }
 }

@@ -25,7 +25,11 @@ public static class AboutApi
         var api = app.MapGroup("api/v{version:apiVersion}/about")
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(1, 0);
-        api.MapGet("/", GetAboutV1);
+        api.MapGet("/", GetAboutV1)
+            .WithSummary("Get about")
+            .WithDescription("Get about")
+            .WithTags("About")
+            .Produces<string>(200);
     }
 
     private static void MapAboutApiV2(this IEndpointRouteBuilder app, ApiVersionSet versionSet)
@@ -33,7 +37,11 @@ public static class AboutApi
         var api = app.MapGroup("api/v{version:apiVersion}/about")
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(2, 0);
-        api.MapGet("/", GetAboutV2);
+        api.MapGet("/", GetAboutV2)
+            .WithSummary("Get about")
+            .WithDescription("Get about")
+            .WithTags("About")
+            .Produces<string>(200);
     }
 
     private static async Task<Ok<string>> GetAboutV1()
