@@ -27,12 +27,6 @@ jobs:
       run: |
         sudo systemctl start docker
         docker info
-
-    - name: Install .NET HTTPS Development Certificate
-      # if: matrix.os == 'ubuntu-latest'
-      run: |
-        dotnet dev-certs https --clean
-        dotnet dev-certs https --trust
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -41,5 +35,6 @@ jobs:
       env:
         DOTNET_ENVIRONMENT: Development
         ASPNETCORE_ENVIRONMENT: Development
+        PROJECTIFY_USE_HTTP_ENDPOINTS: 1
         ASPIRE_ALLOW_UNSECURE_TRANSPORT: true
       run: dotnet test --no-build --verbosity normal
