@@ -19,8 +19,7 @@ var web = builder.AddProject<Projects.PlayProjectify_Web>("webfrontend")
     .WaitFor(apiService)
     .WaitFor(productService);
 
-if (isHttpEndpoints) web.WithHttpEndpoint(port: 8080);
-else web.WithExternalHttpEndpoints();
+if (!isHttpEndpoints) web.WithExternalHttpEndpoints();
 
 builder.Build().Run();
 
