@@ -37,4 +37,4 @@ jobs:
         ASPNETCORE_ENVIRONMENT: Development
         PROJECTIFY_USE_HTTP_ENDPOINTS: 1
         ASPIRE_ALLOW_UNSECURE_TRANSPORT: true
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --logger "console;verbosity=detailed"
