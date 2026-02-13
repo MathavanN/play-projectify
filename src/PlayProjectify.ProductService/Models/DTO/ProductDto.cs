@@ -8,11 +8,12 @@ public interface IProductDto
     string ProductDescription { get; }
     decimal ProductPrice { get; }
 }
-public record ProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice);
+public sealed record ProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice, int ProductQuantity, Guid CategoryId);
+public sealed record GetProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice, int ProductQuantity, Guid CategoryId, string CategoryName);
 
-public sealed record AddProductDto(string ProductName, string ProductDescription, decimal ProductPrice) : IProductDto;
+public sealed record AddProductDto(string ProductName, string ProductDescription, decimal ProductPrice, int ProductQuantity, Guid CategoryId) : IProductDto;
 
-public record UpdateProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice) : IProductDto;
+public sealed record UpdateProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice, int ProductQuantity, Guid CategoryId) : IProductDto;
 
 public sealed class AddProductDtoValidator : ProductBaseValidator<AddProductDto> { }
 
