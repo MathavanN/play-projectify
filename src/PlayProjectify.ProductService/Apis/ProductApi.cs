@@ -3,7 +3,6 @@ using Asp.Versioning.Builder;
 using PlayProjectify.ProductService.Models.DTO;
 using PlayProjectify.ProductService.Services;
 using PlayProjectify.ServiceDefaults;
-using System.ComponentModel;
 
 namespace PlayProjectify.ProductService.Apis;
 
