@@ -1,3 +1,3 @@
 {
-  "appHostPath": "../PlayProjectify.AppHost/PlayProjectify.AppHost.csproj"
+  "appHostPath": "../src/PlayProjectify.AppHost/PlayProjectify.AppHost.csproj"
 }
