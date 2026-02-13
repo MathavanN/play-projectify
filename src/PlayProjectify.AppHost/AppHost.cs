@@ -1,6 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var keycloak = builder.AddKeycloak("keycloak", 8080);
+var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
+//var keycloak = builder.AddKeycloak("keycloak", 8080);
 
 var apiService = builder.AddProject<Projects.PlayProjectify_ApiService>("apiservice")
     .WithHttpHealthCheck("/health");
@@ -11,7 +12,7 @@ var productService = builder.AddProject<Projects.PlayProjectify_ProductService>(
 var orderService = builder.AddProject<Projects.PlayProjectify_OrderService>("orderservice")
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.PlayProjectify_Web>("webfrontend")
+builder.AddProject<Projects.PlayProjectify_Web>("webfrontend", launchProfileName)
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)
@@ -20,3 +21,12 @@ builder.AddProject<Projects.PlayProjectify_Web>("webfrontend")
     .WaitFor(productService);
 
 builder.Build().Run();
+
+static bool ShouldUseHttpForEndpoints()
+{
+    const string EnvVarName = "PROJECTIFY_USE_HTTP_ENDPOINTS";
+    var envValue = Environment.GetEnvironmentVariable(EnvVarName);
+
+    // Attempt to parse the environment variable value; return true if it's exactly "1".
+    return int.TryParse(envValue, out int result) && result == 1;
+}
