@@ -1,6 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
+var isHttpEndpoints = ShouldUseHttpForEndpoints();
+var launchProfileName = isHttpEndpoints ? "http" : "https";
 //var keycloak = builder.AddKeycloak("keycloak", 8080);
 
 var apiService = builder.AddProject<Projects.PlayProjectify_ApiService>("apiservice")
@@ -12,13 +13,17 @@ var productService = builder.AddProject<Projects.PlayProjectify_ProductService>(
 var orderService = builder.AddProject<Projects.PlayProjectify_OrderService>("orderservice")
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Projects.PlayProjectify_Web>("webfrontend", launchProfileName)
-    .WithExternalHttpEndpoints()
+var web = builder.AddProject<Projects.PlayProjectify_Web>("webfrontend", launchProfileName)
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)
     .WithReference(productService)
     .WaitFor(apiService)
     .WaitFor(productService);
+
+if (isHttpEndpoints)
+    web.WithHttpEndpoint(port: 8080);
+else 
+    web.WithExternalHttpEndpoints();
 
 builder.Build().Run();
 
