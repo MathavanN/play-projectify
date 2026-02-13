@@ -20,11 +20,23 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
-    - name: Install Aspire workload
-      run: dotnet workload install aspire
+    - name: Setup Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Start Docker
+      run: |
+        sudo systemctl start docker
+        docker info
+
+    - name: Trust ASP.NET HTTPS cert
+      run: dotnet dev-certs https --trust
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
+      env:
+        DOTNET_ENVIRONMENT: Development
+        ASPNETCORE_ENVIRONMENT: Development
+        ASPIRE_ALLOW_UNSECURE_TRANSPORT: true
       run: dotnet test --no-build --verbosity normal
