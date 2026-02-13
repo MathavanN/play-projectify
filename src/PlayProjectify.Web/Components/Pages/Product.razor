@@ -23,6 +23,8 @@ else
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Quantity</th>
+                <th>Category</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +35,8 @@ else
                     <td>@item.product.ProductName</td>
                     <td>@item.product.ProductDescription</td>
                     <td>@item.product.ProductPrice</td>
+                    <td>@item.product.ProductQuantity</td>
+                    <td>@item.product.CategoryName</td>
                 </tr>
             }
         </tbody>
@@ -40,7 +44,7 @@ else
 }
 
 @code {
-    private ProductDto[]? products;
+    private GetProductDto[]? products;
 
     protected override async Task OnInitializedAsync()
     {

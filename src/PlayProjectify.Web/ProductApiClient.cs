@@ -4,25 +4,26 @@ namespace PlayProjectify.Web;
 
 public class ProductApiClient(HttpClient httpClient)
 {
-    public async Task<ProductDto[]> GetProductsAsync(CancellationToken cancellationToken = default)
+    public async Task<GetProductDto[]> GetProductsAsync(CancellationToken cancellationToken = default)
     {
 
-        var result = await httpClient.GetFromJsonAsync<ApiResult<ProductDto[]>>("api/v1/product", cancellationToken);
+        var result = await httpClient.GetFromJsonAsync<ApiResult<GetProductDto[]>>("api/v1/product", cancellationToken);
         if (result is not null && result.IsSuccess)
             return result.Data ?? [];
         return [];
     }
 
-    public async Task<ProductDto?> GetProductAsync(Guid productId, CancellationToken cancellationToken = default)
+    public async Task<GetProductDto?> GetProductAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        var result = await httpClient.GetFromJsonAsync<ApiResult<ProductDto>>($"api/v1/product/{productId}", cancellationToken);
+        var result = await httpClient.GetFromJsonAsync<ApiResult<GetProductDto>>($"api/v1/product/{productId}", cancellationToken);
         if (result is not null && result.IsSuccess)
             return result.Data;
         return null;
     }
 }
 
-public record ProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice);
+public record GetProductDto(Guid ProductId, string ProductName, string ProductDescription, decimal ProductPrice, int ProductQuantity, Guid CategoryId, string CategoryName);
+
 public record ApiResult<T>
 {
     public bool IsSuccess { get; init; }
