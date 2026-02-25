@@ -14,18 +14,18 @@ public sealed class ProductService : IProductService
         _dbContext = dbContext;
     }
 
-    public async Task<ProjectifyServiceResult<IEnumerable<GetProductDto>>> GetAll()
+    public async Task<ProjectifyServiceResult<IEnumerable<GetProductDto>>> GetAll(CancellationToken cancellationToken = default)
     {
         return await _dbContext.Products
             .Include(p => p.Category)
             .OrderBy(p => p.Id)
             .Select(p => new GetProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity, p.CategoryId, p.Category != null ? p.Category.Name : "Unknown"))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<ProjectifyServiceResult<GetProductDto>> Get(Guid id)
+    public async Task<ProjectifyServiceResult<GetProductDto>> Get(Guid id, CancellationToken cancellationToken = default)
     {
-        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (product is not null)
             return new GetProductDto(product.Id, product.Name, product.Description, product.Price, product.StockQuantity, product.CategoryId, product.Category != null ? product.Category.Name : "Unknown");
 
@@ -33,9 +33,9 @@ public sealed class ProductService : IProductService
     }
 
 
-    public async Task<ProjectifyServiceResult<ProductDto>> Add(AddProductDto product)
+    public async Task<ProjectifyServiceResult<ProductDto>> Add(AddProductDto product, CancellationToken cancellationToken = default)
     {
-        var existing = _dbContext.Products.FirstOrDefault(d => string.Equals(d.Name, product.ProductName, StringComparison.OrdinalIgnoreCase));
+        var existing = await _dbContext.Products.FirstOrDefaultAsync(d => string.Equals(d.Name, product.ProductName, StringComparison.OrdinalIgnoreCase), cancellationToken);
 
         if (existing != null)
             return new ProductDto(existing.Id, existing.Name, existing.Description, existing.Price, existing.StockQuantity, existing.CategoryId);
@@ -50,15 +50,15 @@ public sealed class ProductService : IProductService
             CategoryId = product.CategoryId,
         };
         _dbContext.Products.Add(toInsert);
-        var dbResult = await _dbContext.SaveChangesAsync();
+        var dbResult = await _dbContext.SaveChangesAsync(cancellationToken);
         if (dbResult == 0)
             return ProjectifyServiceResult<ProductDto>.CommonError("Failed to save the new product.");
         return new ProductDto(toInsert.Id, toInsert.Name, toInsert.Description, toInsert.Price, toInsert.StockQuantity, toInsert.CategoryId);
     }
 
-    public async Task<bool> Update(UpdateProductDto product)
+    public async Task<bool> Update(UpdateProductDto product, CancellationToken cancellationToken = default)
     {
-        var existing = _dbContext.Products.FirstOrDefault(p => p.Id == product.ProductId);
+        var existing = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == product.ProductId, cancellationToken);
 
         if (existing is null) return false;
 
@@ -98,16 +98,16 @@ public sealed class ProductService : IProductService
         if (isModified)
         {
             existing.UpdatedAt = DateTime.UtcNow;
-            return (await _dbContext.SaveChangesAsync()) == 1;
+            return (await _dbContext.SaveChangesAsync(cancellationToken)) == 1;
         }
         else return isModified;
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        var existing = _dbContext.Products.FirstOrDefault(p => p.Id == id);
+        var existing = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (existing is null) return false;
         _dbContext.Products.Remove(existing);
-        return (await _dbContext.SaveChangesAsync()) == 1;
+        return (await _dbContext.SaveChangesAsync(cancellationToken)) == 1;
     }
 }

@@ -5,19 +5,19 @@ namespace PlayProjectify.ProductService.Services;
 
 public interface IProductService
 {
-    Task<ProjectifyServiceResult<IEnumerable<GetProductDto>>> GetAll();
-    Task<ProjectifyServiceResult<GetProductDto>> Get(Guid id);
-    Task<ProjectifyServiceResult<ProductDto>> Add(AddProductDto product);
-    Task<bool> Update(UpdateProductDto product);
-    Task<bool> Delete(Guid id);
+    Task<ProjectifyServiceResult<IEnumerable<GetProductDto>>> GetAll(CancellationToken cancellationToken = default);
+    Task<ProjectifyServiceResult<GetProductDto>> Get(Guid id, CancellationToken cancellationToken = default);
+    Task<ProjectifyServiceResult<ProductDto>> Add(AddProductDto product, CancellationToken cancellationToken = default);
+    Task<bool> Update(UpdateProductDto product, CancellationToken cancellationToken = default);
+    Task<bool> Delete(Guid id, CancellationToken cancellationToken = default);
 }
 
 
 public interface ICategoryService
 {
-    Task<ProjectifyServiceResult<IEnumerable<CategoryDto>>> GetAll();
-    Task<ProjectifyServiceResult<CategoryDto>> Get(Guid id);
-    Task<ProjectifyServiceResult<CategoryDto>> Add(AddCategoryDto category);
-    Task<bool> Update(UpdateCategoryDto category);
-    Task<bool> Delete(Guid id);
+    Task<ProjectifyServiceResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken = default);
+    Task<ProjectifyServiceResult<CategoryDto>> Get(Guid id, CancellationToken cancellationToken = default);
+    Task<ProjectifyServiceResult<CategoryDto>> Add(AddCategoryDto category, CancellationToken cancellationToken = default);
+    Task<bool> Update(UpdateCategoryDto category, CancellationToken cancellationToken = default);
+    Task<bool> Delete(Guid id, CancellationToken cancellationToken = default);
 }
