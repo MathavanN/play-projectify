@@ -22,6 +22,20 @@ public static class ApiResultExtensions
         return MapProblem(result);
     }
 
+    public static IResult ToApiResult(this ProjectifyServiceResult result)
+    {
+        if (result.IsSuccess)
+            return TypedResults.Ok(result);
+
+        return MapProblem(result);
+    }
+    public static IResult ToApiNoContentResult(this ProjectifyServiceResult result)
+    {
+        if (result.IsSuccess)
+            return TypedResults.NoContent();
+        return MapProblem(result);
+    }
+
     private static IResult MapProblem(ProjectifyServiceResult result)
     {
         return result.Error?.Status switch
