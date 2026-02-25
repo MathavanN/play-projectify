@@ -22,9 +22,11 @@ builder.Services.AddHttpClient<WeatherApiClient>(client =>
 
 builder.Services.AddHttpClient<ProductApiClient>(client =>
 {
-    // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
-    // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
     client.BaseAddress = new("https+http://productservice");
+});
+builder.Services.AddHttpClient<OrderApiClient>(client =>
+{
+    client.BaseAddress = new("https+http://orderservice");
 });
 
 builder.Services.AddHealthChecks(); // required for Aspire

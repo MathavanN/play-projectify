@@ -1,8 +1,8 @@
 ﻿@page "/product"
-@attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
+@rendermode InteractiveServer
 
 @inject ProductApiClient ProductApi
+@inject OrderApiClient OrderApi
 
 <PageTitle>Products</PageTitle>
 
@@ -41,6 +41,7 @@ else
             }
         </tbody>
     </table>
+    <button class="btn btn-primary" @onclick="PlaceOrder">Place Order</button>
 }
 
 @code {
@@ -49,5 +50,19 @@ else
     protected override async Task OnInitializedAsync()
     {
         products = await ProductApi.GetProductsAsync();
+    }
+
+    async Task PlaceOrder()
+    {
+        var customerId = new Guid("03dab4f9-2e7d-4fa3-be98-7d7c2ef397c0");
+        var random = new Random();
+        var fourRandomOrders = products!
+            .OrderBy(x => random.Next())
+            .Take(4)
+            .Select(d => new CreateOrderItemDto(d.ProductId, random.Next(1,5)));
+        
+        var request = new CreateOrderDto(customerId, fourRandomOrders);
+
+        await OrderApi.CreateOrderAsync(request);
     }
 }
