@@ -10,14 +10,18 @@ var productService = builder.AddProject<Projects.PlayProjectify_ProductService>(
     .WithHttpHealthCheck("/health");
 
 var orderService = builder.AddProject<Projects.PlayProjectify_OrderService>("orderservice")
-    .WithHttpHealthCheck("/health");
+    .WithHttpHealthCheck("/health")
+    .WithReference(productService)
+    .WaitFor(productService);
 
 var web = builder.AddProject<Projects.PlayProjectify_Web>("webfrontend")
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)
     .WithReference(productService)
+    .WithReference(orderService)
     .WaitFor(apiService)
-    .WaitFor(productService);
+    .WaitFor(productService)
+    .WaitFor(orderService);
 
 if (!isHttpEndpoints) web.WithExternalHttpEndpoints();
 
