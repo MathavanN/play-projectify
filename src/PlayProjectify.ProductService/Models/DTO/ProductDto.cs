@@ -42,3 +42,8 @@ public abstract class ProductBaseValidator<T> : AbstractValidator<T> where T : I
             .WithMessage("Product Price must be a positive value.");
     }
 }
+
+public record ProductStockDto(Guid ProductId, int Quantity);
+public record ProductInventoryDto(IEnumerable<ProductStockDto> Items);
+public record LookupIdsDto(IEnumerable<Guid> ProductIds);
+public record ProductLookupDto(IEnumerable<ProductDto> FoundProducts, IEnumerable<Guid> NotFoundProductIds);
