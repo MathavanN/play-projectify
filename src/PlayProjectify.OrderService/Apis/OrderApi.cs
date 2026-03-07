@@ -6,7 +6,7 @@ using PlayProjectify.ServiceDefaults;
 
 namespace PlayProjectify.OrderService.Apis;
 
-public static class  OrderApi
+public static class OrderApi
 {
     public static IEndpointRouteBuilder MapOrderApi(this IEndpointRouteBuilder app)
     {
@@ -61,27 +61,27 @@ public static class  OrderApi
             .Produces<ProjectifyServiceResult>(404);
     }
 
-    private static async Task<IResult> GetOrdersV1(IOrderService orderService)
+    private static async Task<IResult> GetOrdersV1(IOrderService orderService, CancellationToken cancellationToken)
     {
-        var result = await orderService.GetAll();
+        var result = await orderService.GetAll(cancellationToken);
         return result.ToApiResult();
     }
 
-    private static async Task<IResult> GetOrderV1(IOrderService orderService, Guid id)
+    private static async Task<IResult> GetOrderV1(IOrderService orderService, Guid id, CancellationToken cancellationToken)
     {
-        var result = await orderService.Get(id);
+        var result = await orderService.Get(id, cancellationToken);
         return result.ToApiResult();
     }
 
-    private static async Task<IResult> CreateOrderV1(IOrderService orderService, CreateOrderDto order)
+    private static async Task<IResult> CreateOrderV1(IOrderService orderService, CreateOrderDto order, CancellationToken cancellationToken)
     {
-        var result = await orderService.Add(order);
+        var result = await orderService.Add(order, cancellationToken);
         return result.ToApiResult("GetOrder", data => new { id = data.OrderId });
     }
 
-    private static async Task<IResult> CancelOrderV1(IOrderService orderService, Guid id)
+    private static async Task<IResult> CancelOrderV1(IOrderService orderService, Guid id, CancellationToken cancellationToken)
     {
-        var result = await orderService.Cancel(id);
+        var result = await orderService.Cancel(id, cancellationToken);
         return result.ToApiNoContentResult();
     }
 }

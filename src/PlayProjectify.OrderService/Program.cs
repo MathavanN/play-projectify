@@ -19,7 +19,7 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseSqlite("Data Source=order.db"));
 builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
 {
-    client.BaseAddress = new("https+http://productservice"); ;
+    client.BaseAddress = new("https+http://productservice");
 });
 builder.Services.AddScoped<IOrderService, OrderService>();
 //builder.Services.AddScoped<ICategoryService, CategoryService>();
