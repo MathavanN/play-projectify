@@ -14,7 +14,7 @@ public sealed class ProductService : IProductService
         _dbContext = dbContext;
     }
 
-    public async Task<ProjectifyServiceResult<IEnumerable<GetProductDto>>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<ProjectifyServiceResult<IEnumerable<GetProductDto>>> GetAll(CancellationToken cancellationToken)
     {
         return await _dbContext.Products
             .Include(p => p.Category)
@@ -23,7 +23,26 @@ public sealed class ProductService : IProductService
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<ProjectifyServiceResult<GetProductDto>> Get(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ProjectifyServiceResult<ProductLookupDto>> GetByIds(IEnumerable<Guid> productIds, CancellationToken cancellationToken)
+    {
+        var ids = productIds
+            .Where(x => x != Guid.Empty)
+            .Distinct()
+            .ToList();
+
+        var products = await _dbContext.Products
+            .Where(d => ids.Contains(d.Id))
+            .Select(p => new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity, p.CategoryId))
+            .ToListAsync(cancellationToken);
+
+        var foundIds = products.Select(p => p.ProductId).ToHashSet();
+        var notFoundIds = ids
+            .Where(id => !foundIds.Contains(id))
+            .ToList();
+        return new ProductLookupDto(products, notFoundIds);
+    }
+
+    public async Task<ProjectifyServiceResult<GetProductDto>> Get(Guid id, CancellationToken cancellationToken)
     {
         var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (product is not null)
@@ -33,7 +52,7 @@ public sealed class ProductService : IProductService
     }
 
 
-    public async Task<ProjectifyServiceResult<ProductDto>> Add(AddProductDto product, CancellationToken cancellationToken = default)
+    public async Task<ProjectifyServiceResult<ProductDto>> Add(AddProductDto product, CancellationToken cancellationToken)
     {
         var existing = await _dbContext.Products.FirstOrDefaultAsync(d => string.Equals(d.Name, product.ProductName, StringComparison.OrdinalIgnoreCase), cancellationToken);
 
@@ -56,7 +75,7 @@ public sealed class ProductService : IProductService
         return new ProductDto(toInsert.Id, toInsert.Name, toInsert.Description, toInsert.Price, toInsert.StockQuantity, toInsert.CategoryId);
     }
 
-    public async Task<bool> Update(UpdateProductDto product, CancellationToken cancellationToken = default)
+    public async Task<bool> Update(UpdateProductDto product, CancellationToken cancellationToken)
     {
         var existing = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == product.ProductId, cancellationToken);
 
@@ -103,11 +122,56 @@ public sealed class ProductService : IProductService
         else return isModified;
     }
 
-    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken)
     {
         var existing = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (existing is null) return false;
         _dbContext.Products.Remove(existing);
         return (await _dbContext.SaveChangesAsync(cancellationToken)) == 1;
+    }
+
+    public async Task<ProjectifyServiceResult> ReserveStock(ProductInventoryDto items, CancellationToken cancellationToken)
+    {
+        var products = await _dbContext.Products
+            .Where(p => items.Items.Select(i => i.ProductId).Contains(p.Id))
+            .ToListAsync(cancellationToken);
+        foreach (var item in items.Items)
+        {
+            var product = products.FirstOrDefault(p => p.Id == item.ProductId);
+            if (product is null)
+                return ProjectifyServiceResult<object>.NotFound($"Product with ID {item.ProductId} not found");
+
+            if (product.StockQuantity < item.Quantity)
+                return ProjectifyServiceResult<object>.BadRequest($"Product with ID {item.ProductId} has insufficient stock");
+
+            product.StockQuantity -= item.Quantity;
+            product.UpdatedAt = DateTime.UtcNow;
+        }
+
+        var result = await _dbContext.SaveChangesAsync(cancellationToken);
+        if (result == 0)
+            return ProjectifyServiceResult<object>.CommonError("Failed to reserve the stock.");
+        else return ProjectifyServiceResult.Success();
+    }
+
+    public async Task<ProjectifyServiceResult> ReleaseStock(ProductInventoryDto items, CancellationToken cancellationToken)
+    {
+        var products = await _dbContext.Products
+            .Where(p => items.Items.Select(i => i.ProductId).Contains(p.Id))
+            .ToListAsync(cancellationToken);
+        foreach (var item in items.Items)
+        {
+            var product = products.FirstOrDefault(p => p.Id == item.ProductId);
+            if (product is null)
+                return ProjectifyServiceResult<object>.NotFound($"Product with ID {item.ProductId} not found");
+
+            product.StockQuantity += item.Quantity;
+            product.UpdatedAt = DateTime.UtcNow;
+        }
+
+        var result = await _dbContext.SaveChangesAsync(cancellationToken);
+        if (result == 0)
+            return ProjectifyServiceResult<object>.CommonError("Failed to release the stock.");
+        else return ProjectifyServiceResult.Success();
     }
 }

@@ -14,7 +14,7 @@ public sealed class CategoryService : ICategoryService
         _dbContext = dbContext;
     }
 
-    public async Task<ProjectifyServiceResult<CategoryDto>> Add(AddCategoryDto category, CancellationToken cancellationToken = default)
+    public async Task<ProjectifyServiceResult<CategoryDto>> Add(AddCategoryDto category, CancellationToken cancellationToken)
     {
         var existing = await _dbContext.Categories.FirstOrDefaultAsync(d => string.Equals(d.Name, category.CategoryName, StringComparison.OrdinalIgnoreCase), cancellationToken);
 
@@ -34,7 +34,7 @@ public sealed class CategoryService : ICategoryService
         return new CategoryDto(toInsert.Id, toInsert.Name, toInsert.Description);
     }
 
-    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken)
     {
         var existing = await _dbContext.Categories.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (existing is null) return false;
@@ -42,7 +42,7 @@ public sealed class CategoryService : ICategoryService
         return (await _dbContext.SaveChangesAsync(cancellationToken)) == 1;
     }
 
-    public async Task<ProjectifyServiceResult<CategoryDto>> Get(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ProjectifyServiceResult<CategoryDto>> Get(Guid id, CancellationToken cancellationToken)
     {
         var category = await _dbContext.Categories.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (category is not null)
@@ -51,7 +51,7 @@ public sealed class CategoryService : ICategoryService
         return ProjectifyServiceResult<CategoryDto>.NotFound($"Category with ID {id} not found");
     }
 
-    public async Task<ProjectifyServiceResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<ProjectifyServiceResult<IEnumerable<CategoryDto>>> GetAll(CancellationToken cancellationToken)
     {
         return await _dbContext.Categories
             .OrderBy(p => p.Id)
@@ -59,7 +59,7 @@ public sealed class CategoryService : ICategoryService
             .ToListAsync(cancellationToken);
     }
 
-    public Task<bool> Update(UpdateCategoryDto category, CancellationToken cancellationToken = default)
+    public Task<bool> Update(UpdateCategoryDto category, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
