@@ -34,6 +34,13 @@ public static class ProductApi
             .WithTags("Product")
             .Produces<ProjectifyServiceResult<IEnumerable<GetProductDto>>>(200);
 
+        api.MapPost("/lookupByIds", GetProductByIdsV1)
+            .WithName("LookupProductByIds")
+            .WithSummary("Get products by Ids")
+            .WithDescription("Get products by Ids")
+            .WithTags("Product")
+            .Produces<ProjectifyServiceResult<IEnumerable<GetProductDto>>>(200);
+
         api.MapGet("/{id:guid}", GetProductV1)
             .WithName("GetProduct")
             .WithSummary("Get a product")
@@ -50,23 +57,61 @@ public static class ProductApi
             .Validate<AddProductDto>()
             .Produces<ProjectifyServiceResult<ProductDto>>(201)
             .Produces<ProjectifyServiceResult>(400);
+
+        api.MapPut("/reserve", ReserveProductsV1)
+            .WithName("ReserveProducts")
+            .WithSummary("Reserve products")
+            .WithDescription("Reserve products")
+            .WithTags("Product")
+            .Validate<ProductInventoryDto>()
+            .Produces(204)
+            .Produces<ProjectifyServiceResult>(400)
+            .Produces<ProjectifyServiceResult>(404);
+
+        api.MapPut("/release", ReleaseProductsV1)
+            .WithName("ReleaseProducts")
+            .WithSummary("Release products")
+            .WithDescription("Release products")
+            .WithTags("Product")
+            .Validate<ProductInventoryDto>()
+            .Produces(204)
+            .Produces<ProjectifyServiceResult>(400)
+            .Produces<ProjectifyServiceResult>(404);
     }
 
-    private static async Task<IResult> GetProductsV1(IProductService productService)
+    private static async Task<IResult> GetProductsV1(IProductService productService, CancellationToken cancellationToken)
     {
-        var result = await productService.GetAll();
+        var result = await productService.GetAll(cancellationToken);
         return result.ToApiResult();
     }
 
-    private static async Task<IResult> GetProductV1(IProductService productService, Guid id)
+    private static async Task<IResult> GetProductV1(IProductService productService, Guid id, CancellationToken cancellationToken)
     {
-        var result = await productService.Get(id);
+        var result = await productService.Get(id, cancellationToken);
         return result.ToApiResult();
     }
 
-    private static async Task<IResult> AddProductV1(IProductService productService, AddProductDto product)
+    private static async Task<IResult> GetProductByIdsV1(IProductService productService, LookupIdsDto lookup, CancellationToken cancellationToken)
     {
-        var result = await productService.Add(product);
+        var result = await productService.GetByIds(lookup.ProductIds, cancellationToken);
+        return result.ToApiResult();
+    }
+
+    private static async Task<IResult> AddProductV1(IProductService productService, AddProductDto product, CancellationToken cancellationToken)
+    {
+        var result = await productService.Add(product, cancellationToken);
         return result.ToApiResult("GetProduct", data => new { id = data.ProductId });
+    }
+
+    private static async Task<IResult> ReserveProductsV1(IProductService productService, ProductInventoryDto product, CancellationToken cancellationToken)
+    {
+        var result = await productService.ReserveStock(product, cancellationToken);
+        return result.ToApiResult();
+    }
+
+    private static async Task<IResult> ReleaseProductsV1(IProductService productService, ProductInventoryDto product, CancellationToken cancellationToken)
+    {
+        var result = await productService.ReleaseStock(product, cancellationToken);
+        return result.ToApiResult();
     }
 }

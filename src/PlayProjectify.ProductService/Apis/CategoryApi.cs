@@ -52,21 +52,21 @@ public static class CategoryApi
             .Produces<ProjectifyServiceResult>(400);
     }
 
-    private static async Task<IResult> GetCategoriesV1(ICategoryService categoryService)
+    private static async Task<IResult> GetCategoriesV1(ICategoryService categoryService, CancellationToken cancellationToken)
     {
-        var result = await categoryService.GetAll();
+        var result = await categoryService.GetAll(cancellationToken);
         return result.ToApiResult();
     }
 
-    private static async Task<IResult> GetCategoryV1(ICategoryService categoryService, Guid id)
+    private static async Task<IResult> GetCategoryV1(ICategoryService categoryService, Guid id, CancellationToken cancellationToken)
     {
-        var result = await categoryService.Get(id);
+        var result = await categoryService.Get(id, cancellationToken);
         return result.ToApiResult();
     }
 
-    private static async Task<IResult> AddCategoryV1(ICategoryService categoryService, AddCategoryDto category)
+    private static async Task<IResult> AddCategoryV1(ICategoryService categoryService, AddCategoryDto category, CancellationToken cancellationToken)
     {
-        var result = await categoryService.Add(category);
+        var result = await categoryService.Add(category, cancellationToken);
         return result.ToApiResult("GetCategory", data => new { id = data.CategoryId });
     }
 }
