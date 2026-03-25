@@ -56,6 +56,19 @@ public sealed class OrderItem : BaseEntity
     public decimal TotalPrice => Quantity * UnitPrice;
 }
 
+public sealed class Customer : BaseEntity
+{
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string? PhoneNumber { get; set; }
+    public string? CompanyName { get; set; }
+    public string? Notes { get; set; }
+    public string PreferredCurrency { get; set; } = "CHF";
+    public string PreferredLanguage { get; set; } = "en";
+    public bool MarketingOptIn { get; set; } = false;
+    public bool IsActive { get; set; } = true;
+}
 public enum OrderStatus
 {
     Pending,
