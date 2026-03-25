@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using PlayProjectify.ApiService.Apis;
 using PlayProjectify.ApiService.Data;
@@ -15,6 +14,7 @@ builder.AddApiVersioning();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=apiapp.db"));
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 string[] versions = ["v1"];
 builder.AddDefaultOpenApi(versions);
 
@@ -29,6 +29,6 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 app.MapWeatherApi();
 app.MapOrderApi();
-//app.MapCategoryApi();
+app.MapCustomerApi();
 app.UseDefaultOpenApi(versions);
 app.Run();
