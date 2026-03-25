@@ -1,0 +1,68 @@
+﻿@page "/customer"
+@rendermode InteractiveServer
+
+@inject SanboxApiClient SandboxApi
+
+<PageTitle>Customers</PageTitle>
+
+<h1>Customers</h1>
+
+<p>Explore HTTP Patch.</p>
+
+@if (customers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nr</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Company Name</th>
+                <th>Preferred Currency</th>
+                <th>Preferred Language</th>
+                <th>Allow Marketing</th>
+                <th>Is Active</th>
+                <th>Notes</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in customers.Select((customer, index) => new { customer, index }))
+            {
+                <tr>
+                    <td>@(item.index + 1)</td>
+                    <td>@item.customer.FirstName</td>
+                    <td>@item.customer.LastName</td>
+                    <td>@item.customer.Email</td>
+                    <td>@item.customer.PhoneNumber</td>
+                    <td>@item.customer.CompanyName</td>
+                    <td>@item.customer.PreferredCurrency</td>
+                    <td>@item.customer.PreferredLanguage</td>
+                    <td>@item.customer.MarketingOptIn</td>
+                    <td>@item.customer.IsActive</td>
+                    <td>@item.customer.Notes</td>
+                    <td>
+                        <NavLink href="@($"/customers/{item.customer.CustomerId}/edit")">
+                            Edit
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private GetCustomerDto[]? customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await SandboxApi.GetCustomersAsync();
+    }
+}

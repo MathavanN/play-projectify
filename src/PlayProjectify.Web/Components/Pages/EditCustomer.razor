@@ -1,0 +1,137 @@
+﻿@page "/customers/{Id:guid}/edit"
+@inject SanboxApiClient SandboxApi
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<h3>Edit Customer</h3>
+
+@if (_loading)
+{
+    <p>Loading...</p>
+}
+else if (_original is null)
+{
+    <p class="text-danger">Customer not found.</p>
+}
+else
+{
+    <div class="mb-3">
+        <strong>@_original.FirstName @_original.LastName</strong>
+        <span class="text-muted ms-2">@_original.Email</span>
+    </div>
+
+    <EditForm Model="_model" OnValidSubmit="HandleSubmit" FormName="EditCustomerForm">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <InputText class="form-control" @bind-Value="_model.PhoneNumber" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Company Name</label>
+            <InputText class="form-control" @bind-Value="_model.CompanyName" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <InputTextArea class="form-control" rows="3" @bind-Value="_model.Notes" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Preferred Currency</label>
+            <InputSelect class="form-select" @bind-Value="_model.PreferredCurrency">
+                <option value="CHF">CHF</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Preferred Language</label>
+            <InputSelect class="form-select" @bind-Value="_model.PreferredLanguage">
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
+            </InputSelect>
+        </div>
+
+        <div class="mb-3 form-check">
+            <InputCheckbox class="form-check-input" @bind-Value="_model.MarketingOptIn" />
+            <label class="form-check-label">Marketing Opt-In</label>
+        </div>
+
+        <div class="mb-3 form-check">
+            <InputCheckbox class="form-check-input" @bind-Value="_model.IsActive" />
+            <label class="form-check-label">Active</label>
+        </div>
+
+        @if (_errorMessage is not null)
+        {
+            <div class="alert alert-danger">@_errorMessage</div>
+        }
+
+        @if (_successMessage is not null)
+        {
+            <div class="alert alert-success">@_successMessage</div>
+        }
+
+        <button type="submit" class="btn btn-primary" disabled="@_saving">
+            @(_saving ? "Saving…" : "Save Changes")
+        </button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick=Cancel> Cancel
+        </button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private GetCustomerDto? _original;
+    private CustomerEditModel _model = new();
+    private bool _loading  = true;
+    private bool _saving   = false;
+    private string? _errorMessage;
+    private string? _successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _original = await SandboxApi.GetCustomerAsync(Id);
+        if (_original is not null)
+            _model = CustomerEditModel.FromDto(_original);
+        _loading = false;
+    }
+    private async Task Cancel()
+    {
+        Nav.NavigateTo($"/customer");
+    }
+    private async Task HandleSubmit()
+    {
+        _errorMessage   = null;
+        _successMessage = null;
+
+        // Diff against original — only changed fields go in the PATCH
+        var ops = _model.BuildPatch(_original!);
+
+        if (ops.Count == 0)
+        {
+            _successMessage = "No changes detected.";
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            _original = await SandboxApi.PatchCustomerAsync(Id, ops);
+            _successMessage = $"{ops.Count} field(s) updated successfully.";
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Update failed: {ex.Message}";
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

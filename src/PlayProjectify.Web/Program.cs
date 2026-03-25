@@ -13,7 +13,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddOutputCache();
 
-builder.Services.AddHttpClient<WeatherApiClient>(client =>
+builder.Services.AddHttpClient<SanboxApiClient>(client =>
 {
     client.BaseAddress = new("https+http://apiservice");
 });
