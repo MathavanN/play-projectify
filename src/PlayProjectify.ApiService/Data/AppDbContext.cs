@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<Address> Address => Set<Address>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Customer> Customers => Set<Customer>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -71,6 +72,53 @@ public class AppDbContext : DbContext
 
             // Computed in C#, not stored
             entity.Ignore(i => i.TotalPrice);
+        });
+
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+
+            entity.Property(c => c.FirstName)
+                  .IsRequired()
+                  .HasMaxLength(100);
+
+            entity.Property(c => c.LastName)
+                  .IsRequired()
+                  .HasMaxLength(100);
+
+            entity.Property(c => c.Email)
+                  .IsRequired()
+                  .HasMaxLength(255);
+
+            entity.HasIndex(c => c.Email)
+                  .IsUnique();
+
+            entity.Property(c => c.PhoneNumber)
+                  .HasMaxLength(30);
+
+            entity.Property(c => c.CompanyName)
+                  .HasMaxLength(200);
+
+            entity.Property(c => c.Notes)
+                  .HasMaxLength(1000);
+
+            entity.Property(c => c.PreferredCurrency)
+                  .IsRequired()
+                  .HasMaxLength(3)       // ISO 4217: CHF, EUR, USD
+                  .HasDefaultValue("CHF");
+
+            entity.Property(c => c.PreferredLanguage)
+                  .IsRequired()
+                  .HasMaxLength(10)      // BCP 47: en, de, fr, ta
+                  .HasDefaultValue("en");
+
+            entity.Property(c => c.MarketingOptIn)
+                  .IsRequired()
+                  .HasDefaultValue(false);
+
+            entity.Property(c => c.IsActive)
+                  .IsRequired()
+                  .HasDefaultValue(true);
         });
     }
 }
