@@ -23,3 +23,30 @@ public sealed record OrderItemDto(Guid ItemId, string ProductName, decimal UnitP
 };
 
 public sealed record AddressDto(Guid AddressId, string Street1, string? Street2, string City, string State, string PostalCode, string Country);
+
+public sealed class PatchCustomerDto
+{
+    public string? PhoneNumber { get; set; }
+    public string? CompanyName { get; set; }
+    public string? Notes { get; set; }
+    public string? PreferredCurrency { get; set; }
+    public string? PreferredLanguage { get; set; }
+    public bool? MarketingOptIn { get; set; }
+    public bool? IsActive { get; set; }
+}
+
+public sealed record CustomerDto(
+    Guid CustomerId,
+    string FirstName,
+    string LastName,
+    string Email,
+    string? PhoneNumber,
+    string? CompanyName,
+    string? Notes,
+    string PreferredCurrency,
+    string PreferredLanguage,
+    bool MarketingOptIn,
+    bool IsActive,
+    DateTime CreatedAt,
+    DateTime UpdatedAt
+);
