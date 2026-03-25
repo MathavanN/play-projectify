@@ -227,10 +227,11 @@ public static class DbSeeder
         var statuses = Enum.GetValues<OrderStatus>();
 
         var orders = new List<Order>();
+        var custmers = new List<Customer>();
         var addresses = new List<Address>();
         var items = new List<OrderItem>();
 
-        const int totalRecords = 10_000;
+        const int totalRecords = 1000;
         const int batchSize = 1000;
 
         for (int i = 0; i < totalRecords; i++)
@@ -281,6 +282,20 @@ public static class DbSeeder
                 OrderStatus = statuses[random.Next(statuses.Length)],
                 Items = []
             };
+            var customer = new Customer
+            {
+                Id = Guid.NewGuid(),
+                FirstName = order.FirstName,
+                LastName = order.LastName,
+                Email = order.Email,
+                PhoneNumber = random.Next(0, 2) == 0 ? null : $"+41{random.Next(100000000, 999999999)}",
+                CompanyName = random.Next(0, 3) == 0 ? $"Company-{products[random.Next(products.Length)]}" : null,
+                Notes = null,
+                PreferredCurrency = "CHF",
+                PreferredLanguage = "en",
+                MarketingOptIn = random.Next(0, 2) == 0,
+                IsActive = true
+            };
 
             int itemCount = random.Next(1, 5);
             decimal total = 0;
@@ -308,12 +323,14 @@ public static class DbSeeder
             order.TotalAmount = total;
 
             orders.Add(order);
+            custmers.Add(customer);
 
             if (i % batchSize == 0 && i > 0)
             {
                 await context.AddRangeAsync(addresses);
                 await context.AddRangeAsync(orders);
                 await context.AddRangeAsync(items);
+                await context.AddRangeAsync(custmers);
 
                 await context.SaveChangesAsync();
 
@@ -322,6 +339,7 @@ public static class DbSeeder
                 addresses.Clear();
                 orders.Clear();
                 items.Clear();
+                custmers.Clear();
             }
         }
 
@@ -331,6 +349,7 @@ public static class DbSeeder
             await context.AddRangeAsync(addresses);
             await context.AddRangeAsync(orders);
             await context.AddRangeAsync(items);
+            await context.AddRangeAsync(custmers);
 
             await context.SaveChangesAsync();
             context.ChangeTracker.Clear();
