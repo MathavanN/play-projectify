@@ -33,7 +33,7 @@ public static class OrderApi
             .WithSummary("Get orders")
             .WithDescription("Get all orders")
             .WithTags("Order")
-            .Produces<ProjectifyServiceResult<IEnumerable<WeatherForecast>>>(200);
+            .Produces<ProjectifyServiceResult<IEnumerable<OrderDto>>>(200);
 
         api.MapGet("/{id:guid}", GetOrderV1)
             .WithName("GetOrder")
@@ -44,10 +44,6 @@ public static class OrderApi
             .Produces<ProjectifyServiceResult>(404);
 
 
-    }
-    record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-    {
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
     private static async Task<IResult> GetOrdersV1(IOrderService orderService, CancellationToken cancellationToken)
     {
